@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calcula automáticamente las cantidades exactas de tus ingredientes y convierte unidades de cocina de manera rápida, precisa y sencilla.">
+    <title>Conversor y Escalador de Recetas de Cocina</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <header class="navbar no-print">
+        <div class="logo">EscalaCocina</div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#descripcion">Descripción</a></li>
+                <li><a href="#gestor">Gestor de Recetas</a></li>
+                <li><a href="#conversor">Conversor</a></li>
+                <li><a href="#formulas">Fórmulas</a></li>
+                <li><a href="#modelo">Modelo Matemático</a></li>
+            </ul>
+        </nav>
+        <button class="mobile-menu-btn" aria-label="Menu">
+            <i class="fas fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Hero -->
+    <main class="no-print">
+        <section id="inicio" class="hero">
+            <div class="hero-content">
+                <h1>Conversor y Escalador de Recetas de Cocina</h1>
+                <p>Calcula automáticamente las cantidades exactas de tus ingredientes, gestiona tus recetas favoritas y convierte unidades de cocina de manera profesional.</p>
+                <a href="#gestor" class="btn-primary">Comenzar <i class="fas fa-arrow-down"></i></a>
+            </div>
+            <div class="hero-image">
+                <div class="illustration-container">
+                    <i class="fas fa-balance-scale"></i>
+                    <i class="fas fa-utensils"></i>
+                    <i class="fas fa-calculator"></i>
+                </div>
+            </div>
+        </section>
+
+        <!-- Descripción -->
+        <section id="descripcion" class="description">
+            <div class="section-header">
+                <h2>¿Qué hace nuestro sistema?</h2>
+            </div>
+            <div class="description-grid">
+                <article class="desc-card glass-card">
+                    <div class="icon-circle"><i class="fas fa-book-open"></i></div>
+                    <h3>Gestionar Recetas</h3>
+                    <p>Crea, guarda, organiza y busca todas tus recetas en un solo lugar con metadatos completos.</p>
+                </article>
+                <article class="desc-card glass-card">
+                    <div class="icon-circle"><i class="fas fa-expand-arrows-alt"></i></div>
+                    <h3>Escalar Ingredientes</h3>
+                    <p>Ajusta las cantidades de los ingredientes proporcionalmente cambiando el número de porciones.</p>
+                </article>
+                <article class="desc-card glass-card">
+                    <div class="icon-circle"><i class="fas fa-exchange-alt"></i></div>
+                    <h3>Convertir Unidades</h3>
+                    <p>Cambia fácilmente entre un sinfín de unidades de masa, volumen y temperatura.</p>
+                </article>
+                <article class="desc-card glass-card">
+                    <div class="icon-circle"><i class="fas fa-file-pdf"></i></div>
+                    <h3>Exportar y Guardar</h3>
+                    <p>Imprime o guarda en PDF tus recetas escaladas con un formato profesional y listo para usar.</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Gestor de Recetas -->
+        <section id="gestor" class="gestor">
+            <div class="section-header">
+                <h2>Gestor de Recetas</h2>
+                <p>Administra, escala y crea tus recetas de forma sencilla y eficiente.</p>
+            </div>
+
+            <div class="gestor-layout">
+                <!-- Mis Recetas -->
+                <div class="mis-recetas-section glass-card">
+                    <div class="section-top-bar">
+                        <h3>Mis Recetas (<span id="total-recetas">0</span>)</h3>
+                        <button class="btn-primary btn-small" id="btn-nueva-receta"><i class="fas fa-plus"></i> Nueva</button>
+                    </div>
+                    
+                    <div class="recetas-controls">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="buscar-receta" placeholder="Buscar por nombre...">
+                        </div>
+                        <select id="ordenar-receta" class="select-modern">
+                            <option value="fecha-desc">Más recientes</option>
+                            <option value="fecha-asc">Más antiguas</option>
+                            <option value="nombre-asc">Nombre (A-Z)</option>
+                            <option value="nombre-desc">Nombre (Z-A)</option>
+                            <option value="porciones-desc">Más porciones</option>
+                        </select>
+                    </div>
+
+                    <div id="mis-recetas-grid" class="mis-recetas-grid">
+                        <!-- Recetas inyectadas por JS -->
+                    </div>
+                </div>
+
+                <!-- Formulario Creador de Recetas (Oculto por defecto si ya hay recetas) -->
+                <div class="crear-receta-section glass-card" id="crear-receta-section" style="display: none;">
+                    <h3><span id="form-titulo">Crear Nueva Receta</span></h3>
+                    <form id="receta-form" class="form-modern">
+                        <input type="hidden" id="receta-id">
+                        
+                        <div class="form-group-row">
+                            <div class="form-group flex-2">
+                                <label for="receta-nombre">Nombre de la receta</label>
+                                <input type="text" id="receta-nombre" placeholder="Ej. Pan Casero" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receta-categoria">Categoría</label>
+                                <select id="receta-categoria">
+                                    <option value="General">General</option>
+                                    <option value="Desayuno">Desayuno</option>
+                                    <option value="Almuerzo">Almuerzo</option>
+                                    <option value="Cena">Cena</option>
+                                    <option value="Postre">Postre</option>
+                                    <option value="Bebida">Bebida</option>
+                                    <option value="Panadería">Panadería</option>
+                                    <option value="Salsa">Salsa</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label for="receta-porciones">La receta original alcanza para (personas)</label>
+                                <input type="number" id="receta-porciones" min="0.1" step="any" placeholder="Ej. 6" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="receta-tiempo">Tiempo de prep. (min)</label>
+                                <input type="number" id="receta-tiempo" min="1" placeholder="Ej. 45">
+                            </div>
+                            <div class="form-group">
+                                <label for="receta-dificultad">Nivel de dificultad</label>
+                                <select id="receta-dificultad">
+                                    <option value="Fácil">Fácil</option>
+                                    <option value="Intermedio">Intermedio</option>
+                                    <option value="Difícil">Difícil</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="receta-notas">Observaciones o notas (Opcional)</label>
+                            <textarea id="receta-notas" rows="2" placeholder="Ej. Precalentar el horno a 180°C..."></textarea>
+                        </div>
+
+                        <div class="form-divider">
+                            <span>Ingredientes</span>
+                        </div>
+
+                        <div id="ingredientes-lista" class="ingredientes-lista">
+                            <!-- Filas dinámicas -->
+                        </div>
+
+                        <button type="button" id="btn-add-ingrediente" class="btn-secondary mt-1"><i class="fas fa-plus"></i> Agregar ingrediente</button>
+                        
+                        <div class="form-actions mt-2">
+                            <button type="button" id="btn-cancelar-receta" class="btn-text">Cancelar</button>
+                            <button type="submit" class="btn-primary">Guardar receta <i class="fas fa-save"></i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conversor -->
+        <section id="conversor" class="conversor">
+            <div class="section-header">
+                <h2>Conversor de Unidades Avanzado</h2>
+                <p>Herramienta completa para masa, volumen y temperatura.</p>
+            </div>
+            
+            <div class="conversor-container glass-card">
+                <div class="conversor-tabs">
+                    <button class="tab-btn active" data-tab="masa">Masa</button>
+                    <button class="tab-btn" data-tab="volumen">Volumen</button>
+                    <button class="tab-btn" data-tab="temperatura">Temperatura</button>
+                </div>
+                
+                <form id="conversor-form" class="form-modern">
+                    <div class="form-group-row align-center">
+                        <div class="form-group">
+                            <label for="conv-cantidad">Cantidad</label>
+                            <input type="number" id="conv-cantidad" step="any" placeholder="Ej. 100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="conv-origen">De</label>
+                            <select id="conv-origen">
+                                <!-- Opciones inyectadas por JS según pestaña -->
+                            </select>
+                        </div>
+                        <div class="swap-icon" id="swap-units" title="Intercambiar unidades">
+                            <i class="fas fa-exchange-alt"></i>
+                        </div>
+                        <div class="form-group">
+                            <label for="conv-destino">A</label>
+                            <select id="conv-destino">
+                                <!-- Opciones inyectadas por JS según pestaña -->
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Convertir <i class="fas fa-sync-alt"></i></button>
+                    </div>
+                </form>
+
+                <div id="conversor-resultado" class="resultado-card text-center hidden">
+                    <span class="conv-res-from" id="conv-res-from"></span>
+                    <span class="conv-res-equals">=</span>
+                    <span class="conv-res-to" id="conv-res-to"></span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fórmulas (Carrusel) -->
+        <section id="formulas" class="formulas">
+            <div class="section-header">
+                <h2>Catálogo de Fórmulas</h2>
+                <p>Todas las matemáticas detrás de nuestras conversiones y escalados.</p>
+            </div>
+            
+            <div class="slider-container">
+                <button class="slider-btn left" id="slider-left"><i class="fas fa-chevron-left"></i></button>
+                <div class="formulas-slider" id="formulas-slider">
+                    <!-- Tarjetas de Fórmulas (inyectadas o estáticas) -->
+                    
+                    <!-- Escalado -->
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-expand-arrows-alt text-accent text-3xl mb-1"></i>
+                        <h3>Factor de Escala</h3>
+                        <div class="math-expression">k = <span class="fraction"><span class="numerator">Personas deseadas</span><span class="denominator">Personas originales</span></span></div>
+                        <p class="formula-desc">Determina el multiplicador para ajustar la receta entera.</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-balance-scale text-accent text-3xl mb-1"></i>
+                        <h3>Nueva Cantidad</h3>
+                        <div class="math-expression linear">Nueva = Original &times; k</div>
+                        <p class="formula-desc">Aplica el factor de escala a cada ingrediente individualmente.</p>
+                    </div>
+                    
+                    <!-- Masa -->
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-weight-hanging text-accent text-3xl mb-1"></i>
+                        <h3>Kilogramos ↔ Gramos</h3>
+                        <div class="math-expression linear">g = kg &times; 1000</div>
+                        <div class="math-expression linear">kg = g / 1000</div>
+                        <p class="formula-desc">Conversiones directas dentro del sistema métrico decimal.</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-weight text-accent text-3xl mb-1"></i>
+                        <h3>Gramos ↔ Libras</h3>
+                        <div class="math-expression linear">lb = g / 453.592</div>
+                        <div class="math-expression linear">g = lb &times; 453.592</div>
+                        <p class="formula-desc">Conversión entre sistema métrico e imperial de masa (libras).</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-cubes text-accent text-3xl mb-1"></i>
+                        <h3>Gramos ↔ Onzas</h3>
+                        <div class="math-expression linear">oz = g / 28.3495</div>
+                        <div class="math-expression linear">g = oz &times; 28.3495</div>
+                        <p class="formula-desc">Conversión entre sistema métrico e imperial de masa (onzas).</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-balance-scale-right text-accent text-3xl mb-1"></i>
+                        <h3>Libras ↔ Onzas</h3>
+                        <div class="math-expression linear">oz = lb &times; 16</div>
+                        <div class="math-expression linear">lb = oz / 16</div>
+                        <p class="formula-desc">Conversiones internas del sistema imperial de masa.</p>
+                    </div>
+
+                    <!-- Volumen -->
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-flask text-accent text-3xl mb-1"></i>
+                        <h3>Litros ↔ Mililitros</h3>
+                        <div class="math-expression linear">ml = L &times; 1000</div>
+                        <div class="math-expression linear">L = ml / 1000</div>
+                        <p class="formula-desc">Sistema métrico de volumen.</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-mug-hot text-accent text-3xl mb-1"></i>
+                        <h3>Mililitros ↔ Tazas</h3>
+                        <div class="math-expression linear">Tazas = ml / 240</div>
+                        <div class="math-expression linear">ml = Tazas &times; 240</div>
+                        <p class="formula-desc">Aproximación estándar americana de cocina.</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-spoon text-accent text-3xl mb-1"></i>
+                        <h3>Mililitros ↔ Cucharadas</h3>
+                        <div class="math-expression linear">tbsp = ml / 15</div>
+                        <div class="math-expression linear">ml = tbsp &times; 15</div>
+                        <p class="formula-desc">1 Cucharada (tbsp) equivale a 15 mililitros.</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-utensil-spoon text-accent text-3xl mb-1"></i>
+                        <h3>Mililitros ↔ Cucharaditas</h3>
+                        <div class="math-expression linear">tsp = ml / 5</div>
+                        <div class="math-expression linear">ml = tsp &times; 5</div>
+                        <p class="formula-desc">1 Cucharadita (tsp) equivale a 5 mililitros.</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-wine-glass text-accent text-3xl mb-1"></i>
+                        <h3>Mililitros ↔ Onza Líquida</h3>
+                        <div class="math-expression linear">fl oz = ml / 29.5735</div>
+                        <div class="math-expression linear">ml = fl oz &times; 29.5735</div>
+                        <p class="formula-desc">Conversión de líquidos entre métrico e imperial.</p>
+                    </div>
+                    
+                    <!-- Temperatura -->
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-temperature-high text-accent text-3xl mb-1"></i>
+                        <h3>Celsius ↔ Fahrenheit</h3>
+                        <div class="math-expression linear">°F = (°C &times; 9/5) + 32</div>
+                        <div class="math-expression linear">°C = (°F - 32) &times; 5/9</div>
+                        <p class="formula-desc">Fórmulas estándar de conversión de escalas térmicas.</p>
+                    </div>
+                    <div class="formula-card glass-card">
+                        <i class="fas fa-thermometer-half text-accent text-3xl mb-1"></i>
+                        <h3>Celsius ↔ Kelvin</h3>
+                        <div class="math-expression linear">K = °C + 273.15</div>
+                        <div class="math-expression linear">°C = K - 273.15</div>
+                        <p class="formula-desc">Relación entre la escala Celsius y la temperatura absoluta.</p>
+                    </div>
+
+                </div>
+                <button class="slider-btn right" id="slider-right"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </section>
+
+        <!-- Modelo Matemático -->
+        <section id="modelo" class="modelo-matematico">
+            <div class="section-header">
+                <h2>Modelo Matemático</h2>
+                <p>El fundamento detrás de nuestras conversiones y escalados.</p>
+            </div>
+            
+            <div class="modelo-grid">
+                <div class="modelo-card variables-card glass-card">
+                    <h3><i class="fas fa-superscript"></i> Variables</h3>
+                    <ul class="variables-list">
+                        <li><strong><i class="fas fa-users"></i> Porciones base (P<sub>B</sub>):</strong> Para cuántas personas rinde la receta original.</li>
+                        <li><strong><i class="fas fa-users-cog"></i> Porciones deseadas (P<sub>D</sub>):</strong> El número total de personas para las que se desea preparar la receta.</li>
+                        <li><strong><i class="fas fa-balance-scale-left"></i> Cantidad base del ingrediente (I<sub>B</sub>):</strong> La cantidad original indicada en la receta.</li>
+                        <li><strong><i class="fas fa-balance-scale-right"></i> Cantidad deseada del ingrediente (I<sub>D</sub>):</strong> La nueva cantidad calculada después del escalado.</li>
+                    </ul>
+                </div>
+                
+                <div class="modelo-card ecuaciones-card glass-card full-width">
+                    <h3><i class="fas fa-project-diagram"></i> Sistema de Ecuaciones</h3>
+                    <p>El sistema utiliza un modelo de proporcionalidad directa. Primero calcula el factor de escala (<em>k</em>) a partir de la relación entre las porciones deseadas y las porciones base:</p>
+                    <div class="ecuacion-box">
+                        k = P<sub>D</sub> / P<sub>B</sub>
+                    </div>
+                    <p>Luego ese factor se multiplica por la cantidad base de cada ingrediente para obtener la nueva cantidad requerida:</p>
+                    <div class="ecuacion-box">
+                        I<sub>D</sub> = k &times; I<sub>B</sub>
+                    </div>
+                    <p>Como explicación complementaria, esta es la relación de proporcionalidad subyacente:</p>
+                    <div class="ecuacion-box" style="margin-bottom: 0;">
+                        I<sub>B</sub> / P<sub>B</sub> = I<sub>D</sub> / P<sub>D</sub>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Ficha de Receta / Escalador -->
+    <div id="recipe-modal" class="modal-overlay no-print">
+        <div class="modal-content glass-card">
+            <button class="modal-close" id="modal-close"><i class="fas fa-times"></i></button>
+            
+            <div class="ficha-layout">
+                <!-- Columna Izquierda: Detalles e Historial -->
+                <div class="ficha-detalles">
+                    <h2 id="ficha-nombre" class="ficha-titulo">Nombre Receta</h2>
+                    <div class="ficha-badges">
+                        <span class="badge" id="ficha-categoria"><i class="fas fa-tag"></i> Categoría</span>
+                        <span class="badge" id="ficha-tiempo"><i class="fas fa-clock"></i> Tiempo</span>
+                        <span class="badge" id="ficha-dificultad"><i class="fas fa-tachometer-alt"></i> Dificultad</span>
+                        <span class="badge" id="ficha-porciones-orig"><i class="fas fa-users"></i> Porciones</span>
+                    </div>
+                    
+                    <div class="ficha-notas mt-1">
+                        <h4>Observaciones</h4>
+                        <p id="ficha-notas-texto">Sin observaciones.</p>
+                    </div>
+
+                    <div class="ficha-historial mt-2">
+                        <h4><i class="fas fa-history"></i> Historial de Escalados</h4>
+                        <ul id="ficha-historial-lista" class="historial-lista">
+                            <!-- Historial inyectado por JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Columna Derecha: Ingredientes y Acción de Escalar -->
+                <div class="ficha-accion">
+                    <div class="escalador-accion-box">
+                        <p class="text-muted text-sm mb-1">La receta original fue creada para <strong id="ficha-orig-num">6</strong> personas.</p>
+                        <form id="escalar-guardada-form" class="flex items-end gap-1 mb-2">
+                            <div class="form-group flex-1">
+                                <label for="nuevas-porciones" style="font-size:0.9rem;">¿Ahora para cuántas personas deseas prepararla?</label>
+                                <input type="number" id="nuevas-porciones" min="0.1" step="any" placeholder="Ej. 20" required>
+                            </div>
+                            <button type="submit" class="btn-primary" style="padding: 0.9rem 1.2rem;">Escalar <i class="fas fa-calculator"></i></button>
+                        </form>
+                    </div>
+
+                    <div class="tabla-container mt-1">
+                        <table class="tabla-ingredientes">
+                            <thead>
+                                <tr>
+                                    <th>Ingrediente</th>
+                                    <th>Original</th>
+                                    <th class="col-escalada">Nueva Cantidad</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ficha-ingredientes-tabla">
+                                <!-- Ingredientes inyectados por JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="modal-actions mt-2" id="imprimir-container" style="display: none; justify-content: flex-end;">
+                        <button class="btn-secondary" id="btn-imprimir">🖨️ Imprimir / Guardar en PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Layout para Impresión (Solo visible al imprimir) -->
+    <div id="print-layout" class="print-layout print-only">
+        <div class="print-header">
+            <h1>Conversor y Escalador de Recetas de Cocina</h1>
+            <div class="print-meta-grid">
+                <div class="print-meta-item">
+                    <span class="label">Receta:</span>
+                    <strong id="print-nombre">Nombre</strong>
+                </div>
+                <div class="print-meta-item">
+                    <span class="label">Categoría:</span>
+                    <span id="print-categoria">Categoría</span>
+                </div>
+                <div class="print-meta-item">
+                    <span class="label">Original:</span>
+                    <span id="print-originales">4 personas</span>
+                </div>
+                <div class="print-meta-item">
+                    <span class="label">Nuevo:</span>
+                    <strong id="print-nuevas">10 personas</strong>
+                </div>
+                <div class="print-meta-item">
+                    <span class="label">Factor de escala:</span>
+                    <span id="print-factor">2.5x</span>
+                </div>
+                <div class="print-meta-item">
+                    <span class="label">Generado el:</span>
+                    <span id="print-fecha">Fecha</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="print-body">
+            <table class="print-table">
+                <thead>
+                    <tr>
+                        <th>Ingrediente</th>
+                        <th>Cantidad Original</th>
+                        <th>Nueva Cantidad</th>
+                        <th>Unidad</th>
+                    </tr>
+                </thead>
+                <tbody id="print-tbody">
+                    <!-- Filas inyectadas -->
+                </tbody>
+            </table>
+            
+            <div class="print-notas" id="print-notas-container">
+                <h4>Observaciones:</h4>
+                <p id="print-notas"></p>
+            </div>
+        </div>
+
+        <div class="print-footer">
+            <p>Documento generado automáticamente por el Conversor y Escalador de Recetas de Cocina.</p>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container no-print"></div>
+
+    <!-- Footer -->
+    <footer id="contacto" class="no-print">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>Conversor y Escalador de Recetas de Cocina</h3>
+                <p>Herramienta matemática orientada a la eficiencia culinaria y la reducción de desperdicios.</p>
+            </div>
+            <div class="footer-info">
+                <h4>Grupo #1</h4>
+                <ul>
+                    <li><i class="fas fa-user-graduate"></i> Penélope Anelys Valencia Alcivar</li>
+                    <li><i class="fas fa-user-graduate"></i> Josmany Álvarez Cabezas</li>
+                </ul>
+            </div>
+            <div class="footer-meta">
+                <p><i class="fas fa-laptop-code"></i> Tecnología en Desarrollo de Software</p>
+                <p><i class="fas fa-map-marker-alt"></i> Esmeraldas - Ecuador</p>
+                <p><i class="far fa-calendar-alt"></i> 2026</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Conversor y Escalador de Recetas de Cocina. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Botón Volver Arriba -->
+    <a href="#inicio" class="back-to-top no-print" id="backToTop" aria-label="Volver arriba">
+        <i class="fas fa-chevron-up"></i>
+    </a>
+
+    <script src="script.js"></script>
+</body>
+</html>
